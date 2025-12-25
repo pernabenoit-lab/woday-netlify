@@ -3,23 +3,93 @@
 <head>
   <meta charset="UTF-8">
   <title>Woday – Générer ma séance</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f7f7f7;
+    margin: 0;
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 600px;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 14px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .loader {
+    margin-top: 20px;
+    text-align: center;
+    font-style: italic;
+  }
+
+  .seance-wrapper {
+    margin-top: 30px;
+    padding: 20px;
+    background: #fafafa;
+    border-radius: 8px;
+    border: 1px solid #eee;
+  }
+
+  .seance-result {
+    white-space: pre-wrap;
+    font-family: monospace;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+</style>
 </head>
 <body>
-  <h1>Générer ma séance</h1>
+ <body>
+  <div class="container">
+    <h1>Générer ma séance</h1>
 
-  <button id="generate-btn">Générer ma séance</button>
-  <div id="loader" style="display:none;">Génération en cours...</div>
-  <pre id="seance-result"></pre>
+    <button id="generate-btn" class="btn">Générer ma séance</button>
+    <div id="loader" class="loader" style="display:none;">Génération en cours...</div>
+
+    <div id="seance-wrapper" class="seance-wrapper" style="display:none;">
+      <h2>Ta séance du jour</h2>
+      <pre id="seance-result" class="seance-result"></pre>
+    </div>
+  </div>
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       const btn = document.getElementById("generate-btn");
       const loader = document.getElementById("loader");
       const result = document.getElementById("seance-result");
+      const wrapper = document.getElementById("seance-wrapper");
 
       btn.addEventListener("click", function () {
         btn.disabled = true;
         loader.style.display = "block";
+        wrapper.style.display = "none";
         result.textContent = "";
 
         fetch("/.netlify/functions/generate", {
@@ -28,10 +98,12 @@
         .then(response => response.text())
         .then(text => {
           result.textContent = text;
+          wrapper.style.display = "block";
         })
         .catch(error => {
           console.error("Erreur FETCH :", error);
           result.textContent = "Erreur FETCH : " + error;
+          wrapper.style.display = "block";
         })
         .finally(() => {
           loader.style.display = "none";
