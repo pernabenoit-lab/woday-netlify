@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Woday – Générer ma séance</title>
+</head>
+<body>
+  <h1>Générer ma séance</h1>
+
+  <button id="generate-btn">Générer ma séance</button>
+  <div id="loader" style="display:none;">Génération en cours...</div>
+  <pre id="seance-result"></pre>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const btn = document.getElementById("generate-btn");
+      const loader = document.getElementById("loader");
+      const result = document.getElementById("seance-result");
+
+      btn.addEventListener("click", function () {
+        btn.disabled = true;
+        loader.style.display = "block";
+        result.textContent = "";
+
+        fetch("/.netlify/functions/generate", {
+          method: "POST"
+        })
+        .then(response => response.text())
+        .then(text => {
+          result.textContent = text;
+        })
+        .catch(error => {
+          console.error("Erreur FETCH :", error);
+          result.textContent = "Erreur FETCH : " + error;
+        })
+        .finally(() => {
+          loader.style.display = "none";
+          btn.disabled = false;
+        });
+      });
+    });
+  </script>
+</body>
+</html>
